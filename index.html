@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will You Be My Valentine? 💕</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Crimson+Text:ital@0;1&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Crimson Text', serif;
+            background: linear-gradient(135deg, #ffeef8 0%, #ffe8f3 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        h1, h2 {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-5deg); }
+            75% { transform: rotate(5deg); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Floating hearts background */
+        .floating-hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .heart {
+            position: absolute;
+            color: rgba(255, 105, 180, 0.3);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        /* Main screen */
+        .main-screen {
+            position: relative;
+            z-index: 10;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .prelude-photo {
+            width: 100%;
+            max-width: 500px;
+            margin: 40px auto;
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 1.5s ease-out;
+        }
+
+        .prelude-text {
+            max-width: 700px;
+            margin: 0 auto 40px;
+            text-align: center;
+            font-size: 1.35rem;
+            color: #6c757d;
+            font-style: italic;
+            line-height: 1.7;
+            animation: fadeIn 2s ease-out 0.8s both;
+        }
+
+        .prelude-photo img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .film-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 0, 0, 0.03) 2px,
+                rgba(0, 0, 0, 0.03) 4px
+            );
+            pointer-events: none;
+        }
+
+        .title {
+            text-align: center;
+            margin: 40px 0;
+            animation: fadeIn 2s ease-out 0.5s both;
+        }
+
+        .title h1 {
+            font-size: 3.5rem;
+            color: #d63384;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .title p {
+            font-size: 1.5rem;
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        /* Memory grid */
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+            animation: fadeIn 2s ease-out 1s both;
+        }
+
+        .memory-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .memory-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(214, 51, 132, 0.3);
+        }
+
+        .memory-card img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        .memory-card h3 {
+            padding: 20px;
+            text-align: center;
+            color: #d63384;
+            font-size: 1.3rem;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            margin: 20px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .modal-image {
+            width: 100%;
+            height: auto;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .modal-text {
+            padding: 30px;
+        }
+
+        .modal-text h2 {
+            color: #d63384;
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+
+        .modal-text p {
+            color: #495057;
+            font-size: 1.2rem;
+            line-height: 1.8;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .close-button:hover {
+            transform: scale(1.1) rotate(90deg);
+            background: #d63384;
+            color: white;
+        }
+
+        /* Buttons */
+        .reveal-button, .yes-button, .no-button, .continue-button {
+            padding: 20px 50px;
+            font-size: 1.5rem;
+            font-family: 'Playfair Display', serif;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: heartbeat 2s ease-in-out infinite;
+        }
+
+        .yes-button {
+            padding: 28px 80px;
+            font-size: 2.1rem;
+        }
+
+        .reveal-button, .yes-button, .continue-button {
+            background: linear-gradient(135deg, #ff6b9d 0%, #c94b7d 100%);
+            color: white;
+        }
+
+        .reveal-button:hover, .yes-button:hover, .continue-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(214, 51, 132, 0.4);
+        }
+
+        .no-button {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            color: white;
+            position: fixed;
+            transition: transform 0.2s ease, left 0.2s ease, top 0.2s ease;
+        }
+
+        .no-button:hover {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        .button-container {
+            text-align: center;
+            margin: 60px 0;
+        }
+
+        /* Proposal screen */
+        .proposal-screen {
+            text-align: center;
+            padding: 60px 20px;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .proposal-screen h1 {
+            font-size: 4rem;
+            color: #d63384;
+            margin-bottom: 40px;
+            animation: heartbeat 1.5s ease-in-out infinite;
+        }
+
+        .button-group {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 140px;
+            min-height: 140px;
+            min-width: 420px;
+            margin-top: 40px;
+        }
+
+        /* Celebration screen */
+        .celebration-screen {
+            text-align: center;
+            padding: 40px 20px;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .celebration-screen h1 {
+            font-size: 4rem;
+            color: #d63384;
+            margin-bottom: 20px;
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        .celebration-screen h2 {
+            font-size: 2rem;
+            color: #6c757d;
+            margin-bottom: 40px;
+            font-style: italic;
+        }
+
+        .memory-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+        }
+
+        .memory-showcase img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .memory-showcase img:hover {
+            transform: scale(1.05) rotate(2deg);
+        }
+
+        /* Gallery screen */
+        .gallery-screen {
+            animation: fadeIn 1s ease-out;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .gallery-screen h1 {
+            text-align: center;
+            font-size: 3.5rem;
+            color: #d63384;
+            margin: 40px 0;
+        }
+
+        .gallery-grid {
+            position: relative;
+            margin: 40px 0 80px;
+            min-height: 3000px;
+            flex: 1 0 auto;
+        }
+
+        .gallery-item {
+            position: absolute;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            width: var(--w, 28%);
+            left: var(--x, 0%);
+            top: var(--y, 0%);
+            transform: rotate(var(--r, 0deg));
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(214, 51, 132, 0.3);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            display: block;
+        }
+
+        .gallery-phrase {
+            position: absolute;
+            left: var(--x, 0%);
+            top: var(--y, 0%);
+            transform: rotate(var(--r, 0deg));
+            font-size: 1.8rem;
+            color: #c94b7d;
+            font-style: italic;
+            text-align: center;
+            max-width: 240px;
+        }
+
+        .gallery-love {
+            text-align: center;
+            font-size: 4.2rem;
+            color: #d63384;
+            margin: 160px 0 80px;
+            text-shadow: 2px 2px 10px rgba(214, 51, 132, 0.2);
+        }
+
+        @media (max-width: 900px) {
+            .gallery-grid {
+                min-height: auto;
+            }
+
+            .gallery-item,
+            .gallery-phrase {
+                position: relative;
+                left: auto;
+                top: auto;
+                transform: none;
+                width: 90%;
+                margin: 20px auto;
+            }
+        }
+
+        .gallery-caption {
+            padding: 25px;
+            text-align: center;
+        }
+
+        .gallery-caption p {
+            color: #d63384;
+            font-size: 1.3rem;
+            font-style: italic;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-hearts" id="floatingHearts"></div>
+    <div class="container" id="app"></div>
+
+    <script>
+        // Create floating hearts
+        function createFloatingHearts() {
+            const container = document.getElementById('floatingHearts');
+            for (let i = 0; i < 20; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.innerHTML = '❤️';
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.top = Math.random() * 100 + '%';
+                heart.style.fontSize = (Math.random() * 30 + 20) + 'px';
+                heart.style.animationDelay = Math.random() * 6 + 's';
+                heart.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                container.appendChild(heart);
+            }
+        }
+
+        createFloatingHearts();
+
+        // App state
+        let state = {
+            selectedMemory: null,
+            showProposal: false,
+            showCelebration: false,
+            showGallery: false,
+            noButtonPosition: { x: 0, y: 0 },
+            noAttempts: 0
+        };
+
+
+        const preludePhoto = './Looking at my hair.jpeg';
+const memories = [
+    {
+      id: 1,
+            title: 'The HOCO Proposal',
+      photo: 'Her HOCO Proposal.jpeg',
+      story: `When you gave me the Steph Curry Hoco Poster that you made for me, my world lit up. I felt so happy, so giddy, so wanted, so valued. That was the start of something magical.`
+    },
+    {
+      id: 2,
+            title: 'Your HOCO',
+            photo: 'Her HOCO.jpeg',
+            story: `Just a couple days after we started dating, you drove me to MOHAI. That drive, finding how much Kelsea Ballerini reminds me of your scent and your smile, and getting to meet your friends, it was one of the most special moments of my life. You holding my arm as we were walking to MOHAI, I will never forget that moment.`
+        },
+        {
+            id: 3,
+            title: 'After you got back',
+            photo: 'After she got back from College Tour.jpeg',
+      story: `You had just gotten back from your college tour trip a day prior. Man, was that week tough. I had missed you more than I had ever missed anyone before, and when I saw you on this day all I wanted to do was just be in your arms forever.`
+    },
+    {
+            id: 4,
+            title: 'MY HOCO',
+      photo: 'My HOCO us looking.jpeg',
+      story: `My HOCO. Being able to be around some of my closest friends and show my girlfriend off was one of the best feelings in the world. For you to be there, around my friends, and with me at my first ever Issaquah Homecoming, it was one of the most special and cozy feelings I have felt, ever.`
+    },
+    {
+      id: 5,
+            title: 'Lola and Bugs',
+      photo: 'Lola and Bugs.jpeg',
+      story: `Halloween. This was the first Halloween I was genuinely excited for in so many years. Bugs and Lola was the perfect choice, and you looked absolutely gorgeous in that Lola Bunny costume. I felt so complete, so whole.`
+    },
+    {
+            id: 6,
+                        title: 'Your birthday',
+            photo: 'Her birthday.jpeg',
+            story: `Planning out your birthday: what to get you, where to go, it was one of the most fulfilling things I have ever done. I wanted so badly to make sure you had the best 18th birthday possible. When I went to buy the necklace, I felt so happy that I was getting something for my love. Something I really liked that I had hoped you would cherish. That feeling, the feeling of being with my muffin on her birthday, it made me feel so alive. So happy`
+        },
+        {
+            id: 7,
+                        title: 'Us at the Seahawks game',
+            photo: "Us at Seahawks.jpeg",
+            story: `I had always been yearning to go to a game with you, the love of my life. When we got the opportunity to go, I was so excited to do something that I love so much with the woman that I love. The Seahawks blowing out the 49ers just made it even better. Seeing how excited you were at the game, seeing you go crazy and swing that pom pom around like you had no care in the world, it almost brought me to tears. You rock my world every single day, and on this day I think you rocked my galaxy.`
+    },
+  ];
+
+const galleryPhotos = [
+  "Din Tai.jpeg",
+  "Face Masks.jpeg",
+  "Halloween.jpeg",
+  "Her Again.jpeg",
+  "Her HOCO.jpeg",
+  "Her looking Goofy.jpeg",
+  "Her sleeping.jpeg",
+  "Her.jpeg",
+  "Me looking at her.jpeg",
+  "More her.jpeg",
+  "Shopping.jpeg",
+  "Tongue.jpeg",
+  "Us at Hawks with Parents.jpeg",
+  "Wallpaper.jpeg"
+];
+
+const galleryLayout = [
+    { x: '3%', y: '2%', w: '25%', r: '-3deg' },
+    { x: '36%', y: '10%', w: '26%', r: '2deg' },
+    { x: '68%', y: '18%', w: '24%', r: '-2deg' },
+    { x: '8%', y: '32%', w: '26%', r: '3deg' },
+    { x: '40%', y: '44%', w: '25%', r: '-2deg' },
+    { x: '72%', y: '58%', w: '23%', r: '2deg' },
+    { x: '5%', y: '72%', w: '26%', r: '1deg' },
+    { x: '36%', y: '86%', w: '25%', r: '-3deg' },
+    { x: '66%', y: '100%', w: '24%', r: '2deg' },
+    { x: '10%', y: '114%', w: '26%', r: '-2deg' },
+    { x: '40%', y: '128%', w: '25%', r: '2deg' },
+    { x: '70%', y: '142%', w: '24%', r: '-1deg' },
+    { x: '6%', y: '156%', w: '26%', r: '2deg' },
+    { x: '44%', y: '170%', w: '25%', r: '-2deg' }
+];
+
+const galleryPhrases = [
+    'You are my favorite person',
+    'Every moment with you is magic',
+    'My heart found its home',
+    'You make the ordinary sparkle',
+    'Forever grateful for you',
+    'You + me = everything'
+];
+
+const galleryPhraseLayout = [
+    { x: '6%', y: '20%', r: '-6deg' },
+    { x: '76%', y: '6%', r: '4deg' },
+    { x: '6%', y: '54%', r: '3deg' },
+    { x: '78%', y: '38%', r: '-4deg' },
+    { x: '6%', y: '86%', r: '-5deg' },
+    { x: '78%', y: '72%', r: '5deg' }
+];
+
+
+
+        // Helper functions
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function render() {
+            const app = document.getElementById('app');
+            
+            if (state.showGallery) {
+                renderGallery();
+            } else if (state.showCelebration) {
+                renderCelebration();
+            } else if (state.showProposal) {
+                renderProposal();
+            } else if (state.selectedMemory !== null) {
+                renderModal();
+            } else {
+                renderMain();
+            }
+        }
+
+        function renderMain() {
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                <div class="main-screen">
+                    <div class="title">
+                        <h1>Our Story</h1>
+                        <p>These have been some of the best 6 months of my life, between when we started talking to now. You mean the world to me. You make me smile at even the thought of you and your smile. You are the definition of amazing, and this is my little treat for you, my creation.</p>
+                    </div>
+
+                    <div class="prelude-photo">
+                        <img src="${preludePhoto}" alt="Our Beginning">
+                        <div class="film-overlay"></div>
+                    </div>
+
+                    <p class="prelude-text">We both didn't know what this would turn into, but this moment felt like the start of it all.</p>
+
+                    <div class="memory-grid">
+                        ${memories.map((memory, index) => `
+                            <div class="memory-card" onclick="openMemory(${index})">
+                                <img src="${memory.photo}" alt="${escapeHtml(memory.title)}">
+                                <h3>${escapeHtml(memory.title)}</h3>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <div class="button-container">
+                        <button class="reveal-button" onclick="showProposal()">
+                            ❤️ Ready for the Question? ❤️
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderModal() {
+            const app = document.getElementById('app');
+            const memory = memories[state.selectedMemory];
+            
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.onclick = (e) => {
+                if (e.target === modal) closeModal();
+            };
+            
+            modal.innerHTML = `
+                <button class="close-button" onclick="closeModal()">✕</button>
+                <div class="modal-content">
+                    <img src="${memory.photo}" alt="${escapeHtml(memory.title)}" class="modal-image">
+                    <div class="modal-text">
+                        <h2>${escapeHtml(memory.title)}</h2>
+                        <p>${escapeHtml(memory.story)}</p>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+
+        function renderProposal() {
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                <div class="proposal-screen">
+                    <h1>💕 Will You Be My Valentine? 💕</h1>
+                    <p style="font-size: 1.5rem; color: #6c757d; margin: 20px 0;">
+                        You make every day brighter, every moment sweeter, and every memory unforgettable.
+                    </p>
+                    <div class="button-group">
+                        <button class="yes-button" onclick="handleYes()">YES! 💖</button>
+                        <button class="no-button" id="noButton" onclick="handleNo()">No</button>
+                    </div>
+                </div>
+            `;
+            
+            setupNoButton();
+        }
+
+        function renderCelebration() {
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                <div class="celebration-screen">
+                    <h1>🎉 You Said YES! 🎉</h1>
+                    <h2>You've made me the happiest person alive! ❤️</h2>
+                    
+                    <p style="font-size: 1.3rem; color: #495057; margin: 30px 0; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.8;">
+                        Every moment with you is a blessing. You are my sunshine, my inspiration, and my best friend. 
+                        I can't wait to create a million more memories with you. Here's to us! 💕
+                    </p>
+
+                    <h2 style="margin-top: 60px; margin-bottom: 30px; color: #d63384;">Our Beautiful Memories</h2>
+                    <div class="memory-showcase">
+                        ${memories.map(memory => `
+                            <img src="${memory.photo}" alt="${escapeHtml(memory.title)}">
+                        `).join('')}
+                    </div>
+
+                    <div class="button-container">
+                        <button class="continue-button" onclick="showGallery()">
+                            ❤️ See More Memories ❤️
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderGallery() {
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                <div class="gallery-screen">
+                    <h1>💕 More Precious Moments 💕</h1>
+                    
+                    <div class="gallery-grid">
+                        ${galleryPhotos.map((photo, index) => {
+                            const layout = galleryLayout[index % galleryLayout.length];
+                            return `
+                                <div class="gallery-item" style="--x: ${layout.x}; --y: ${layout.y}; --w: ${layout.w}; --r: ${layout.r};">
+                                    <img src="${photo}" alt="Memory">
+                                </div>
+                            `;
+                        }).join('')}
+
+                        ${galleryPhrases.map((phrase, index) => {
+                            const layout = galleryPhraseLayout[index % galleryPhraseLayout.length];
+                            return `
+                                <div class="gallery-phrase" style="--x: ${layout.x}; --y: ${layout.y}; --r: ${layout.r};">${escapeHtml(phrase)}</div>
+                            `;
+                        }).join('')}
+                    </div>
+
+                    <div class="gallery-love">I love you ❤️</div>
+                </div>
+            `;
+        }
+
+        // Event handlers
+        function openMemory(index) {
+            state.selectedMemory = index;
+            renderModal();
+        }
+
+        function closeModal() {
+            const modal = document.querySelector('.modal');
+            if (modal) modal.remove();
+            state.selectedMemory = null;
+        }
+
+        function showProposal() {
+            state.showProposal = true;
+            render();
+        }
+
+        function handleYes() {
+            state.showCelebration = false;
+            state.showGallery = true;
+            render();
+        }
+
+        function showGallery() {
+            state.showGallery = true;
+            render();
+        }
+
+        function setupNoButton() {
+            const button = document.getElementById('noButton');
+            const yesButton = document.querySelector('.yes-button');
+            if (!button || !yesButton) return;
+
+            button.textContent = 'No';
+
+            const placeNextToYes = () => {
+                const rect = yesButton.getBoundingClientRect();
+                if (rect.width === 0 || rect.height === 0) {
+                    requestAnimationFrame(placeNextToYes);
+                    return;
+                }
+
+                button.style.left = rect.right + 28 + 'px';
+                button.style.top = rect.top + 8 + 'px';
+            };
+
+            const runAway = (changeText) => {
+                const messages = [
+                    "That would really hurt",
+                    "Please don't do that",
+                    "Be nice to my heart",
+                    "Ouch... that's not kind",
+                    "Please say yes",
+                    "I'm gonna cry"
+                ];
+
+                if (changeText) {
+                    state.noAttempts++;
+                    button.textContent = messages[Math.min(state.noAttempts - 1, messages.length - 1)];
+                }
+
+                const buttonRect = button.getBoundingClientRect();
+                const yesRect = yesButton.getBoundingClientRect();
+                const padding = 16;
+                const avoidPadding = 30;
+                const maxX = Math.max(window.innerWidth - buttonRect.width - padding, 0);
+                const maxY = Math.max(window.innerHeight - buttonRect.height - padding, 0);
+
+                let x = 0;
+                let y = 0;
+                let attempts = 0;
+
+                do {
+                    x = padding + Math.random() * maxX;
+                    y = padding + Math.random() * maxY;
+                    attempts++;
+                } while (
+                    attempts < 40 &&
+                    x < yesRect.right + avoidPadding &&
+                    x + buttonRect.width > yesRect.left - avoidPadding &&
+                    y < yesRect.bottom + avoidPadding &&
+                    y + buttonRect.height > yesRect.top - avoidPadding
+                );
+
+                button.style.left = x + 'px';
+                button.style.top = y + 'px';
+            };
+
+            placeNextToYes();
+            button.onmouseenter = () => runAway(true);
+            button.onclick = () => runAway(true);
+            window.onresize = placeNextToYes;
+        }
+
+        function handleNo() {
+            const button = document.getElementById('noButton');
+            if (button) button.dispatchEvent(new Event('mouseenter'));
+        }
+
+        // Initialize app
+        render();
+    </script>
+</body>
+</html>
